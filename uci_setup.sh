@@ -32,7 +32,7 @@ uci commit
 #set up cron
 sed -i "/#uptime_push$/d" /etc/crontabs/root
 cat <<EOF >>/etc/crontabs/root
-*/5 * * * * /etc/rn/uptime_monitor.sh >/dev/null 2>/dev/null #uptime_push
+*/5 * * * * /etc/rn/uptime_monitor.sh >/dev/null 2>&1 #uptime_push
 EOF
 /etc/init.d/cron reload
 
