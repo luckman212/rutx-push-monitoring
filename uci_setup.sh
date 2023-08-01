@@ -40,3 +40,6 @@ EOF
 if ! grep -q '^/etc/rn$' /etc/sysupgrade.conf; then
 	echo "/etc/rn" >>/etc/sysupgrade.conf
 fi
+
+#init
+/etc/rn/uptime_monitor
