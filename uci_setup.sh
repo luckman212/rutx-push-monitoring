@@ -3,7 +3,9 @@
 SERVER=$1
 TOKEN=$2
 
-[ -n "$TOKEN" ] || exit 1
+if [ -z "$TOKEN" ] || [ "$TOKEN" = "0000000000" ]; then
+	exit 1
+fi
 
 uci import reliable </dev/null
 uci add reliable globals
