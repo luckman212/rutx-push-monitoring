@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 
 SERVER=$1
 TOKEN=$2
