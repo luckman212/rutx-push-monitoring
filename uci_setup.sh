@@ -1,7 +1,9 @@
 #!/usr/bin/sh
 
+SERVER=$1
+TOKEN=$2
+
 [ -n "$TOKEN" ] || exit 1
-[ -n "$SERVER" ] || exit 1
 
 uci import reliable </dev/null
 uci add reliable globals
@@ -24,3 +26,16 @@ set reliable.$cfg.enabled=0
 EOI
 
 uci commit
+
+#set up cron
+sed -i "/#uptime_push$/d" /etc/crontabs/root
+cat <<EOF >>/etc/crontabs/root
+*/5 * * * * /etc/rn/uptime_monitor >/dev/null 2>/dev/null #uptime_push
+EOF
+
+#ensure rn dir persists
+if ! grep -q '^/etc/rn$' /etc/sysupgrade.conf; then
+	echo "/etc/rn" >>/etc/sysupgrade.conf
+fi
+
+/etc/init.d/cron reload
