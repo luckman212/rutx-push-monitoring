@@ -1,10 +1,29 @@
 #!/bin/sh
 
-SERVER=$1
-TOKEN=$2
+# export the vars below or supply them as args
+if [ -n "$3" ]; then
+	SERVER=$1
+	TOKEN=$2
+	QMI_IFACE=$3
+fi
 
 if [ -z "$TOKEN" ] || [ "$TOKEN" = "0000000000" ]; then
+	echo "invalid TOKEN"
 	exit 1
+fi
+
+if [ -z "$SERVER" ]; then
+	echo "invalid SERVER"
+	exit 1
+fi
+
+# you can specify 'auto' for this to have the script derive it at runtime
+if [ -z "$QMI_IFACE" ]; then
+	QMI_IFACE=$(ubus -S call networkmap interfaces | jsonfilter -e '@.interfaces[@.proto="wwan" && @.status=true].device')
+	if [ -z "$QMI_IFACE" ]; then
+		echo "could not determine qmimux interface"
+		exit 1
+	fi
 fi
 
 uci import reliable </dev/null
@@ -13,7 +32,7 @@ uci set reliable.@globals[0].hostname="$SERVER"
 
 cfg=$(uci add reliable push_monitor)
 uci batch <<EOI
-set reliable.$cfg.interface='wwan0'
+set reliable.$cfg.interface='$QMI_IFACE'
 set reliable.$cfg.token='$TOKEN'
 set reliable.$cfg.report_latency=1
 set reliable.$cfg.enabled=1
