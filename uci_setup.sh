@@ -26,7 +26,8 @@ if [ -z "$QMI_IFACE" ]; then
 	fi
 fi
 
-uci import reliable </dev/null
+touch /etc/config/reliable
+#uci import reliable </dev/null
 uci add reliable globals
 uci set reliable.@globals[0].hostname="$SERVER"
 
@@ -51,7 +52,7 @@ uci commit
 #set up cron
 sed -i "/#uptime_push$/d" /etc/crontabs/root
 cat <<EOF >>/etc/crontabs/root
-*/5 * * * * /etc/rn/uptime_monitor.sh >/dev/null 2>&1 #uptime_push
+*/4 * * * * /etc/rn/uptime_monitor.sh >/dev/null 2>&1 #uptime_push
 EOF
 /etc/init.d/cron reload
 
